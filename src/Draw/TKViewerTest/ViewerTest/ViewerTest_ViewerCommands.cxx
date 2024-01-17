@@ -811,11 +811,12 @@ TCollection_AsciiString ViewerTest::ViewerInit(const ViewerTest_VinitParams& the
 #if defined(HAVE_XLIB)
   if (isNewDriver)
   {
-    ::Display* aDispX = (::Display*)GetDisplayConnection()->GetDisplayAspect();
-    Tcl_CreateFileHandler(XConnectionNumber(aDispX),
+    Handle(Xw_DisplayConnection) anXDispCon = Handle(Xw_DisplayConnection)::DownCast(GetDisplayConnection());
+    ::Display* aDispX = (::Display* )anXDispCon->GetDisplayAspect();
+    Tcl_CreateFileHandler(anXDispCon->FileDescriptor(),
                           TCL_READABLE,
                           VProcessEvents,
-                          (ClientData)aDispX);
+                          (ClientData )aDispX);
   }
 #endif
 
