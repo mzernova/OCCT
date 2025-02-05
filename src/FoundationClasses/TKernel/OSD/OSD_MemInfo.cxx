@@ -34,10 +34,7 @@
 #include <OSD_MemInfo.hxx>
 
 #if defined(__EMSCRIPTEN__)
-  #include <emscripten.h>
-
-//! Return WebAssembly heap size in bytes.
-EM_JS(double, OSD_MemInfo_getModuleHeapLength, (), { return Module.HEAP8.length; });
+  #include <emscripten/heap.h>
 #endif
 
 //=================================================================================================
@@ -160,7 +157,11 @@ void OSD_MemInfo::Update()
   }
   if (IsActive(MemVirtual))
   {
-    myCounters[MemVirtual] = (size_t)OSD_MemInfo_getModuleHeapLength();
+    myCounters[MemVirtual] = emscripten_get_heap_size();
+  }
+  if (IsActive(MemVirtualMax))
+  {
+    myCounters[MemVirtualMax] = emscripten_get_heap_max();
   }
   #elif (defined(__linux__) || defined(__linux))
   if (IsActive(MemHeapUsage))
@@ -298,7 +299,13 @@ TCollection_AsciiString OSD_MemInfo::ToString() const
   if (hasValue(MemVirtual))
   {
     anInfo += TCollection_AsciiString("  Virtual memory:     ")
-              + Standard_Integer(ValueMiB(MemVirtual)) + " MiB\n";
+              + Standard_Integer(ValueMiB(MemVirtual)) + " MiB";
+    if (hasValue(MemVirtualMax))
+    {
+      anInfo += TCollection_AsciiString(" (limit: ")
+                + Standard_Integer(ValueMiB(MemVirtualMax)) + " MiB)";
+    }
+    anInfo += "\n";
   }
   if (hasValue(MemHeapUsage))
   {
