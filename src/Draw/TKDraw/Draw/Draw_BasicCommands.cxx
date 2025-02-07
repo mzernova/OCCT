@@ -894,6 +894,10 @@ static int dmeminfo(Draw_Interpretor& theDI, Standard_Integer theArgNb, const ch
     {
       aCounters.Add(OSD_MemInfo::MemPrivate);
     }
+    else if (anArg == "stack")
+    {
+      aCounters.Add (OSD_MemInfo::MemStackSize);
+    }
 #if defined(__EMSCRIPTEN__)
     else if ((anArg == "-resize" || anArg == "-wasmresize") && anIter + 1 < theArgNb)
     {
@@ -1369,8 +1373,8 @@ void Draw::BasicCommands(Draw_Interpretor& theCommands)
                   mallochook,
                   g);
   theCommands.Add("meminfo",
-                  "meminfo [virt|v] [heap|h] [wset|w] [wsetpeak] [swap] [swappeak] [private] [virtMax|vmax]"
-                  "\n\t\t: Prints memory counters for this process."
+                  "meminfo [virt|v] [heap|h] [wset|w] [wsetpeak] [swap] [swappeak] [private] [virtMax|vmax] [stack]"
+                  "\n\t\t: Prints memory counters for this process (and stack size for the main thread)."
 #if defined(__EMSCRIPTEN__)
                   "\n\t\t:"
                   "\n\t\t: meminfo [-wasmResize nbMiB]"
